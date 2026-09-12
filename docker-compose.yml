@@ -1,0 +1,26 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      # Checkpoints and benchmark results are mounted, not baked into the
+      # image, so newly trained models appear without a rebuild.
+      - ./models:/app/models:ro
+      - ./results/processed:/app/results/processed:ro
+      - ./configs:/app/configs:ro
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deployment/frontend/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - API_BASE_URL=http://api:8000
+    depends_on:
+      - api
+    restart: unless-stopped

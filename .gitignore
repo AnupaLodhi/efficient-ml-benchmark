@@ -29,3 +29,6 @@ results/raw/logs/
 
 # Docker
 *.log
+
+# Streamlit
+.streamlit/

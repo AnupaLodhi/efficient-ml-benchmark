@@ -179,8 +179,55 @@ nothing resembling a real result is sitting in the repo -- `results/raw/`,
 `results/processed/`, `results/figures/`, `results/tables/` are empty
 (just `.gitkeep`) again. 49/49 tests passing at this point.
 
-## Phase 7 — NOT STARTED
-Deployment: FastAPI backend, Streamlit frontend, Docker.
+## Phase 7 — Deployment (CODE COMPLETE, VERIFIED LOCALLY; DOCKER UNTESTED)
+Built:
+- `deployment/api/model_registry.py`: scans `models/{baseline,pruning,
+  quantization,combined}/*.pt` and joins each checkpoint against
+  `results/processed/results_processed.csv` by run-id substring match --
+  only ever lists a model that genuinely has a saved checkpoint, and only
+  ever reports a metric that was genuinely measured (`None` otherwise,
+  never guessed).
+- `deployment/api/main.py`: FastAPI service (`/health`, `/models`,
+  `/predict`). `/predict` returns BOTH this request's actual measured
+  latency AND the separate Phase-6-benchmarked latency for that model
+  (`null` if not yet benchmarked) -- deliberately never conflated, per the
+  spec's "do not pretend a compressed model is faster than benchmarking
+  shows" instruction.
+- `deployment/frontend/app.py`: Streamlit UI (upload image, pick model
+  variant, view prediction/confidence/latency/size/compression ratio),
+  talks to the API over HTTP so the two can be deployed/scaled
+  independently.
+- `Dockerfile` (API, CPU-only torch install) and
+  `deployment/frontend/Dockerfile` (frontend), wired together by
+  `docker-compose.yml` with `models/`/`results/processed/`/`configs/`
+  mounted read-only so new checkpoints don't require an image rebuild.
+- `deployment/README.md`: the three deployment-target options (local /
+  small VPS / managed platform) and exact run commands for each.
+
+**Verified in this sandbox:**
+- `TestClient` hits `/health`, `/models`, `/predict` against the real app
+  object -- correctly reports zero models / 503 when `models/` is empty
+  (the actual current state of this repo).
+- A real (freshly-initialized, untrained) checkpoint was saved, the
+  registry discovered it, and `/predict` returned a well-formed response
+  (predicted class, confidence, real measured request latency, `None` for
+  unmeasured benchmark fields) -- then the checkpoint was deleted so no
+  stray artifact is sitting in the repo.
+- `uvicorn deployment.api.main:app` was actually started as a subprocess
+  and hit over real HTTP (not just `TestClient`) -- `/health` and
+  `/models` responded correctly.
+- `streamlit run deployment/frontend/app.py --server.headless true`
+  started without import/syntax errors.
+- `docker-compose.yml` validated as well-formed YAML with `pyyaml`.
+
+**NOT verified**: actual `docker build`/`docker compose up`. This sandbox
+has no Docker daemon and no network access to Docker Hub (egress is
+restricted to a small package-registry allowlist). Run `docker compose up
+--build` yourself on a machine with Docker before relying on the container
+path -- flagged clearly in `deployment/README.md`, not silently assumed to
+work.
+
+8/8 new deployment tests passing (`test_deployment_api.py`); 57/57 total.
 
 ## Phases 8-9 — NOT STARTED
 Literature review + research gap, research paper.
