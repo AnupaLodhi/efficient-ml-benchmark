@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: efficient-ml-benchmark-api
+    runtime: python
+    buildCommand: pip install -r deployment/requirements-api.txt
+    startCommand: uvicorn deployment.api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10

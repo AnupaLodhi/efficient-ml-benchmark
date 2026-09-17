@@ -1,9 +1,9 @@
-# Minimal deps for the FastAPI inference service Docker image -- NOT the
-# same as the root requirements.txt (which includes training/research
-# tooling that has no business in a deployment image).
 fastapi>=0.110
 uvicorn[standard]>=0.27
 python-multipart>=0.0.9
 pillow>=10.0
 pandas>=2.0
 pyyaml>=6.0
+torch==2.2.2
+torchvision==0.17.2
+numpy==1.26.4
