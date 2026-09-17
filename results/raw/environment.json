@@ -1,0 +1,23 @@
+{
+  "timestamp_utc": "2026-09-14T15:54:09.242694+00:00",
+  "python_version": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:47:00) [Clang 13.0.0 (clang-1300.0.29.30)]",
+  "platform": "macOS-13.7.8-x86_64-i386-64bit",
+  "torch_version": "2.2.2",
+  "torch_cuda_build": null,
+  "numpy_version": "1.26.4",
+  "pandas_version": "3.0.5",
+  "sklearn_version": "1.5.2",
+  "cpu": {
+    "processor": "i386",
+    "machine": "x86_64",
+    "logical_cores": 8,
+    "physical_cores": null,
+    "torch_num_threads": 4
+  },
+  "memory": {},
+  "gpu": {
+    "cuda_available": false,
+    "device_count": 0,
+    "devices": []
+  }
+}

@@ -1,0 +1,82 @@
+# =============================================================================
+# Central configuration for the Efficient-ML-Benchmark project.
+# Every experiment script reads from this file (via src.utils.config) instead
+# of hard-coding hyperparameters. Override any field with CLI flags, e.g.:
+#   python -m experiments.train_baseline --epochs 5 --seed 123
+# =============================================================================
+
+project:
+  name: "efficient-ml-benchmark"
+  seed: 42
+  deterministic: true          # torch.use_deterministic_algorithms
+  device: "cpu"                 # "cpu" | "cuda" | "auto"
+
+paths:
+  data_dir: "data"
+  models_dir: "models"
+  results_raw: "results/raw"
+  results_processed: "results/processed"
+  results_figures: "results/figures"
+  results_tables: "results/tables"
+  log_dir: "results/raw/logs"
+
+data:
+  dataset: "cifar10"
+  num_classes: 10
+  image_size: 32
+  # CIFAR-10 has 50,000 train / 10,000 test images. We carve a validation
+  # split out of the official training set so the official test set is
+  # never touched during model/hyperparameter selection.
+  train_fraction: 0.9           # of the 50,000 train images -> 45,000 train
+  val_fraction: 0.1             #                              -> 5,000 val
+  split_seed: 42                # split is independent of the training seed
+  normalize_mean: [0.4914, 0.4822, 0.4465]   # standard CIFAR-10 stats
+  normalize_std: [0.2470, 0.2435, 0.2616]
+  augmentation:
+    random_crop_padding: 4
+    random_horizontal_flip: true
+  num_workers: 0                 # single-core CPU sandbox; raise on real hardware
+  batch_size: 128
+
+model:
+  architecture: "resnet18"
+  pretrained: false              # trained from scratch on CIFAR-10, not ImageNet
+  # ImageNet ResNet-18 uses a 7x7/stride-2 stem + maxpool, tuned for 224x224
+  # input. That discards too much spatial resolution for 32x32 CIFAR images,
+  # so we use the standard CIFAR variant: 3x3/stride-1 stem, no maxpool.
+  cifar_stem: true
+
+training:
+  epochs: 100
+  optimizer: "sgd"
+  lr: 0.1
+  momentum: 0.9
+  weight_decay: 5.0e-4
+  nesterov: true
+  lr_scheduler: "cosine"
+  warmup_epochs: 5
+  label_smoothing: 0.0
+  grad_clip_norm: null
+  early_stopping_patience: 15
+  checkpoint_metric: "val_accuracy"
+
+evaluation:
+  batch_size: 256
+  latency_num_warmup: 10
+  latency_num_runs: 50           # repeated timing runs -> mean +/- std
+  latency_batch_size: 1          # single-image latency, deployment-relevant
+
+pruning:
+  sparsities: [0.2, 0.4, 0.6, 0.8]
+  methods: ["unstructured_l1"]
+  fine_tune_epochs: 3            # short fine-tune after pruning to recover accuracy
+
+quantization:
+  methods: ["fp32_baseline", "fp16", "dynamic_int8", "static_int8"]
+  static_calibration_batches: 20
+
+combined:
+  # Deliberately restricted so the experiment grid stays interpretable and
+  # affordable to run; justified in experiments/run_combined.py docstring.
+  sparsities: [0.4, 0.6]
+  quantization_methods: ["dynamic_int8", "static_int8"]

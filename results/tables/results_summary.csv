@@ -1,0 +1,14 @@
+run_id,technique,pruning_method,sparsity,quantization_method,classification_accuracy,classification_f1_macro,model_size_mb,compression_ratio,latency_mean_ms,latency_std_ms
+baseline_fp32_20260914T183810Z,baseline,,0.0,fp32,0.6475,0.6483,42.6993,1.0,18.2788,4.094
+quantization_fp32_20260916T111319Z,quantization,,0.0,fp32,0.6475,0.6483,42.6993,1.0,9.3609,0.7172
+quantization_fp16_20260916T122931Z,quantization,,0.0,fp16,0.6478,0.6486,21.3687,1.9982,1140.9242,30.3277
+quantization_dynamic_int8_20260916T123134Z,quantization,,0.0,dynamic_int8,0.6479,0.6487,42.6854,1.0003,12.3348,1.1537
+quantization_static_int8_20260916T123235Z,quantization,,0.0,static_int8,0.3328,0.2861,10.7834,3.9597,17.0889,5.116
+pruning_unstructured_l1_s0.2_20260916T194442Z,pruning,unstructured_l1,0.2,fp32,0.7566,0.7588,42.6993,1.0,13.124,2.1055
+pruning_unstructured_l1_s0.4_20260916T205946Z,pruning,unstructured_l1,0.4,fp32,0.7656,0.7667,42.6993,1.0,16.6835,2.9534
+pruning_unstructured_l1_s0.6_20260917T065358Z,pruning,unstructured_l1,0.6,fp32,0.7683,0.7709,42.6993,1.0,13.0827,0.4534
+pruning_unstructured_l1_s0.8_20260917T080740Z,pruning,unstructured_l1,0.8,fp32,0.7112,0.7171,42.6993,1.0,12.199,0.5265
+combined_s0.4_dynamic_int8_20260917T084313Z,combined,unstructured_l1,0.4,dynamic_int8,0.7655,0.7666,42.6854,1.0003,18.2441,9.8501
+combined_s0.4_static_int8_20260917T084513Z,combined,unstructured_l1,0.4,static_int8,0.3036,0.2733,10.7834,3.9597,22.2396,3.0907
+combined_s0.6_dynamic_int8_20260917T084718Z,combined,unstructured_l1,0.6,dynamic_int8,0.7684,0.7709,42.6854,1.0003,17.8713,4.1984
+combined_s0.6_static_int8_20260917T084849Z,combined,unstructured_l1,0.6,static_int8,0.1859,0.1376,10.7834,3.9597,22.8375,4.956

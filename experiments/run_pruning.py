@@ -26,7 +26,12 @@ from pathlib import Path
 import torch
 
 from src.benchmarking.results_store import append_result_row
-from src.compression.pruning import apply_structured_pruning, apply_unstructured_pruning, get_sparsity_report
+from src.compression.pruning import (
+    apply_structured_pruning,
+    apply_unstructured_pruning,
+    finalize_pruning,
+    get_sparsity_report,
+)
 from src.evaluation.metrics import full_evaluation_report
 from src.models.resnet import build_resnet18_cifar
 from src.training.train import train_model
@@ -76,7 +81,10 @@ def run_pruning_sweep(cfg, checkpoint_path: str | Path) -> None:
             model = load_baseline_model(checkpoint_path, cfg)
 
             if sparsity > 0.0:
-                prune_fn(model, sparsity)
+                if method == "unstructured_l1":
+                    prune_fn(model, sparsity, remove_reparam=False)
+                else:
+                    prune_fn(model, sparsity)
                 sparsity_report = get_sparsity_report(model)
                 logger.info(f"Achieved overall prunable-layer sparsity: {sparsity_report['overall_sparsity']:.3f}")
 
@@ -88,6 +96,9 @@ def run_pruning_sweep(cfg, checkpoint_path: str | Path) -> None:
                     device=cfg.project.device,
                 )
                 model.load_state_dict(torch.load(fine_tune_ckpt, map_location="cpu"))
+                if method == "unstructured_l1":
+                    finalize_pruning(model)
+                sparsity_report = get_sparsity_report(model)
                 training_time = history.total_train_time_sec
             else:
                 sparsity_report = get_sparsity_report(model)
@@ -152,11 +163,26 @@ def run_smoke_test(cfg) -> None:
 
     for method, prune_fn in METHOD_FUNCS.items():
         m = copy.deepcopy(model)
-        prune_fn(m, 0.4)
+        if method == "unstructured_l1":
+            prune_fn(m, 0.4, remove_reparam=False)
+        else:
+            prune_fn(m, 0.4)
         sparsity_report = get_sparsity_report(m)
         logger.info(f"SMOKE TEST [{method}]: overall sparsity after pruning = {sparsity_report['overall_sparsity']:.3f}")
         history = train_model(m, train_loader, val_loader, cfg, epochs=1, device="cpu")
         assert len(history.train_loss) == 1
+
+        post_train_report = get_sparsity_report(m)
+        logger.info(
+            f"SMOKE TEST [{method}]: overall sparsity after fine-tuning = "
+            f"{post_train_report['overall_sparsity']:.3f}"
+        )
+
+        if method == "unstructured_l1":
+            assert abs(post_train_report["overall_sparsity"] - 0.4) < 0.01
+            finalize_pruning(m)
+            final_report = get_sparsity_report(m)
+            assert abs(final_report["overall_sparsity"] - 0.4) < 0.01
 
     logger.info("SMOKE TEST complete: pruning + fine-tune pipeline runs end-to-end for both methods.")
 

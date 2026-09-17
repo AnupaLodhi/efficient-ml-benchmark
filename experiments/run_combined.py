@@ -59,7 +59,7 @@ import torch
 import torch.ao.nn.quantized.dynamic as nnqd
 
 from src.benchmarking.results_store import append_result_row
-from src.compression.pruning import apply_unstructured_pruning, get_sparsity_report
+from src.compression.pruning import apply_unstructured_pruning, finalize_pruning, get_sparsity_report
 from src.compression.quantization import apply_dynamic_quantization, apply_static_quantization
 from src.evaluation.metrics import full_evaluation_report
 from src.models.resnet import build_resnet18_cifar
@@ -93,18 +93,52 @@ def run_combined_sweep(cfg, checkpoint_path: str | Path) -> None:
 
     for sparsity in cfg.combined.sparsities:
         set_seed(cfg.project.seed, deterministic=cfg.project.deterministic)
-        logger.info(f"=== Combined: unstructured_l1 sparsity={sparsity}, fine-tuning ===")
+        logger.info(f"=== Combined: reusing corrected pruning checkpoint sparsity={sparsity} ===")
+
+        pruning_ckpt = (
+            Path(cfg.paths.models_dir)
+            / "pruning"
+            / f"resnet18_unstructured_l1_s{sparsity}.pt"
+        )
+        if not pruning_ckpt.exists():
+            raise FileNotFoundError(
+                f"Corrected pruning checkpoint not found at {pruning_ckpt}. "
+                "Run the Phase 3 pruning sweep first."
+            )
 
         pruned_model = load_baseline_model(checkpoint_path, cfg)
-        apply_unstructured_pruning(pruned_model, sparsity)
+        apply_unstructured_pruning(
+            pruned_model,
+            sparsity,
+            remove_reparam=False,
+        )
+        pruned_model.load_state_dict(
+            torch.load(pruning_ckpt, map_location="cpu")
+        )
+
+        masked_report = get_sparsity_report(pruned_model)
+        if abs(masked_report["overall_sparsity"] - sparsity) >= 0.01:
+            raise RuntimeError(
+                f"Loaded pruning checkpoint has unexpected sparsity: "
+                f"target={sparsity:.4f}, "
+                f"actual={masked_report['overall_sparsity']:.4f}"
+            )
+
+        finalize_pruning(pruned_model)
         sparsity_report = get_sparsity_report(pruned_model)
 
-        ft_ckpt = Path(cfg.paths.models_dir) / "combined" / f"resnet18_pruned_s{sparsity}_finetuned.pt"
-        history = train_model(
-            pruned_model, train_loader, val_loader, cfg,
-            epochs=cfg.pruning.fine_tune_epochs, checkpoint_path=ft_ckpt, device=cfg.project.device,
+        if abs(sparsity_report["overall_sparsity"] - sparsity) >= 0.01:
+            raise RuntimeError(
+                f"Finalized checkpoint has unexpected sparsity: "
+                f"target={sparsity:.4f}, "
+                f"actual={sparsity_report['overall_sparsity']:.4f}"
+            )
+
+        logger.info(
+            f"Corrected checkpoint verified and finalized: "
+            f"target={sparsity:.3f}, "
+            f"actual={sparsity_report['overall_sparsity']:.3f}"
         )
-        pruned_model.load_state_dict(torch.load(ft_ckpt, map_location="cpu"))
 
         for q_method in cfg.combined.quantization_methods:
             logger.info(f"=== Combined: sparsity={sparsity} + {q_method} ===")
@@ -137,10 +171,12 @@ def run_combined_sweep(cfg, checkpoint_path: str | Path) -> None:
                 "pruning_method": "unstructured_l1",
                 "quantization_method": q_method,
                 "device": "cpu",
-                "training_time_sec": history.total_train_time_sec,
+                "training_time_sec": 0.0,
                 "notes": (
-                    f"pruned_sparsity={sparsity_report['overall_sparsity']:.4f}, then fine-tuned "
-                    f"{cfg.pruning.fine_tune_epochs} epochs, then {q_method} quantization. {extra_note}"
+                    f"Reused corrected Phase 3 pruning checkpoint at "
+                    f"sparsity={sparsity_report['overall_sparsity']:.4f}; "
+                    f"no additional fine-tuning in combined phase; "
+                    f"then applied {q_method} quantization. {extra_note}"
                 ),
                 **report,
             }
@@ -175,8 +211,25 @@ def run_smoke_test(cfg) -> None:
     val_loader = DataLoader(_Tiny(16, 1), batch_size=8)
 
     model = build_resnet18_cifar(num_classes=cfg.data.num_classes, cifar_stem=cfg.model.cifar_stem)
-    apply_unstructured_pruning(model, 0.4)
+    apply_unstructured_pruning(model, 0.4, remove_reparam=False)
+
+    before = get_sparsity_report(model)["overall_sparsity"]
+    assert abs(before - 0.4) < 0.01
+
     history = train_model(model, train_loader, val_loader, cfg, epochs=1, device="cpu")
+
+    during = get_sparsity_report(model)["overall_sparsity"]
+    assert abs(during - 0.4) < 0.01
+
+    finalize_pruning(model)
+
+    after = get_sparsity_report(model)["overall_sparsity"]
+    assert abs(after - 0.4) < 0.01
+
+    logger.info(
+        f"SMOKE TEST: sparsity before={before:.3f}, "
+        f"after fine-tuning={during:.3f}, finalized={after:.3f}"
+    )
     logger.info(f"SMOKE TEST: pruned + 1-epoch fine-tune done, train_loss={history.train_loss[0]:.4f}")
 
     mdyn = apply_dynamic_quantization(model)

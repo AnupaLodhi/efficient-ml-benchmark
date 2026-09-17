@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Results | EfficientML</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>E</text></svg>">
+
+<style>
+.results-page {
+  width: min(1200px, calc(100% - 80px));
+  margin: auto;
+  padding: 65px 0;
+}
+
+.results-page h1 {
+  margin-top: 14px;
+  color: #0b1930;
+  font-size: 46px;
+  letter-spacing: -2px;
+}
+
+.results-page > p {
+  max-width: 760px;
+  margin-top: 12px;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.table-wrap {
+  margin-top: 32px;
+  overflow-x: auto;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th {
+  padding: 14px;
+  text-align: left;
+  color: #64748b;
+  background: #f8fafc;
+  border-bottom: 1px solid #dbe3ee;
+  font-size: 10px;
+  letter-spacing: .7px;
+}
+
+td {
+  padding: 15px 14px;
+  color: #334155;
+  border-bottom: 1px solid #edf1f5;
+  font-size: 12px;
+}
+
+td strong {
+  color: #0b1930;
+}
+
+.tag {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 6px;
+  color: #2563eb;
+  background: #eff6ff;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.charts {
+  margin-top: 45px;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 16px;
+}
+
+.chart-card {
+  padding: 22px;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+}
+
+.chart-card h3 {
+  color: #0b1930;
+}
+
+.chart-row {
+  margin-top: 15px;
+}
+
+.chart-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #475569;
+  font-size: 9px;
+}
+
+.bar-bg {
+  height: 9px;
+  margin-top: 5px;
+  background: #e9eef5;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: #2563eb;
+}
+
+.findings {
+  margin-top: 40px;
+}
+
+.findings h2 {
+  color: #0b1930;
+}
+
+.finding-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 12px;
+}
+
+.finding {
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+}
+
+.finding strong {
+  display: block;
+  color: #0b1930;
+}
+
+.finding p {
+  margin-top: 7px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.warning {
+  margin-top: 25px;
+  padding: 18px;
+  color: #7c4a12;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+@media(max-width:900px) {
+  .results-page {
+    width: calc(100% - 32px);
+  }
+
+  .charts,
+  .finding-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<nav class="navbar">
+<div class="brand">
+<div class="brand-icon">E</div>
+<span>EfficientML</span>
+</div>
+
+<div class="nav-links">
+<a href="index.html">Home</a>
+<a href="how-it-works.html">How It Works</a>
+<a href="lab.html">Interactive Lab</a>
+<a class="nav-active" href="results.html">Results</a>
+<a href="about.html">About</a>
+<a class="github"
+href="https://github.com/AnupaLodhi/efficient-ml-benchmark"
+target="_blank">◉ GitHub</a>
+</div>
+</nav>
+</header>
+
+
+<main class="results-page">
+
+<div class="section-tag">REAL LOCAL EXPERIMENT DATA</div>
+
+<h1>Benchmark Results</h1>
+
+<p>
+Compare the accuracy–efficiency trade-offs observed across the current
+ResNet-18 compression experiments on CIFAR-10.
+</p>
+
+
+
+<div id="apiStatus" style="
+  margin-top:25px;
+  padding:12px 16px;
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  border-radius:7px;
+  color:#315b92;
+  font-size:11px;">
+  Connecting to live benchmark API...
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>EXPERIMENT</th>
+<th>ACCURACY</th>
+<th>MODEL SIZE</th>
+<th>CPU LATENCY</th>
+</tr>
+</thead>
+
+<tbody id="resultsBody">
+
+<tr>
+<td><strong>FP32 Baseline</strong><br><span class="tag">BASELINE</span></td>
+<td>64.75%</td>
+<td>42.70 MB</td>
+<td>18.28 ms</td>
+</tr>
+
+<tr>
+<td><strong>20% Pruning</strong><br><span class="tag">PRUNING*</span></td>
+<td>75.66%</td>
+<td>42.70 MB</td>
+<td>13.12 ms</td>
+</tr>
+
+<tr>
+<td><strong>40% Pruning</strong><br><span class="tag">PRUNING*</span></td>
+<td>76.56%</td>
+<td>42.70 MB</td>
+<td>16.68 ms</td>
+</tr>
+
+<tr>
+<td><strong>60% Pruning</strong><br><span class="tag">PRUNING</span></td>
+<td>76.83%</td>
+<td>42.70 MB</td>
+<td>13.08 ms</td>
+</tr>
+
+<tr>
+<td><strong>80% Pruning</strong><br><span class="tag">PRUNING</span></td>
+<td>71.12%</td>
+<td>42.70 MB</td>
+<td>12.20 ms</td>
+</tr>
+
+<tr>
+<td><strong>FP16</strong><br><span class="tag">QUANTIZATION</span></td>
+<td>64.78%</td>
+<td>21.37 MB</td>
+<td>1140.92 ms</td>
+</tr>
+
+<tr>
+<td><strong>Dynamic INT8</strong><br><span class="tag">QUANTIZATION</span></td>
+<td>64.79%</td>
+<td>42.69 MB</td>
+<td>12.33 ms</td>
+</tr>
+
+<tr>
+<td><strong>Static INT8</strong><br><span class="tag">QUANTIZATION</span></td>
+<td>33.28%</td>
+<td>10.78 MB</td>
+<td>17.09 ms</td>
+</tr>
+
+<tr>
+<td><strong>40% + Dynamic INT8</strong><br><span class="tag">COMBINED*</span></td>
+<td>76.55%</td>
+<td>42.69 MB</td>
+<td>18.24 ms</td>
+</tr>
+
+<tr>
+<td><strong>40% + Static INT8</strong><br><span class="tag">COMBINED*</span></td>
+<td>30.36%</td>
+<td>10.78 MB</td>
+<td>22.24 ms</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div class="charts">
+
+<div class="chart-card">
+
+<h3>Accuracy</h3>
+
+<div class="chart-row">
+<div class="chart-label"><span>Baseline</span><b>64.75%</b></div>
+<div class="bar-bg"><div class="bar" style="width:64.75%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>40% Pruning*</span><b>76.56%</b></div>
+<div class="bar-bg"><div class="bar" style="width:76.56%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>Dynamic INT8</span><b>64.79%</b></div>
+<div class="bar-bg"><div class="bar" style="width:64.79%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>Static INT8</span><b>33.28%</b></div>
+<div class="bar-bg"><div class="bar" style="width:33.28%"></div></div>
+</div>
+
+</div>
+
+
+<div class="chart-card">
+
+<h3>Model Size</h3>
+
+<div class="chart-row">
+<div class="chart-label"><span>Baseline</span><b>42.70 MB</b></div>
+<div class="bar-bg"><div class="bar" style="width:100%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>FP16</span><b>21.37 MB</b></div>
+<div class="bar-bg"><div class="bar" style="width:50%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>Dynamic INT8</span><b>42.69 MB</b></div>
+<div class="bar-bg"><div class="bar" style="width:99.9%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>Static INT8</span><b>10.78 MB</b></div>
+<div class="bar-bg"><div class="bar" style="width:25.2%"></div></div>
+</div>
+
+</div>
+
+
+<div class="chart-card">
+
+<h3>Latency</h3>
+
+<div class="chart-row">
+<div class="chart-label"><span>Baseline</span><b>18.28 ms</b></div>
+<div class="bar-bg"><div class="bar" style="width:54%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>Dynamic INT8</span><b>12.33 ms</b></div>
+<div class="bar-bg"><div class="bar" style="width:36%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>Static INT8</span><b>17.09 ms</b></div>
+<div class="bar-bg"><div class="bar" style="width:50%"></div></div>
+</div>
+
+<div class="chart-row">
+<div class="chart-label"><span>Combined Static</span><b>22.24 ms</b></div>
+<div class="bar-bg"><div class="bar" style="width:100%"></div></div>
+</div>
+
+</div>
+
+</div>
+
+
+<section class="findings">
+
+<h2>What are we learning?</h2>
+
+<div class="finding-grid">
+
+<div class="finding">
+<strong>Static INT8 strongly reduces storage.</strong>
+<p>
+The current model falls from approximately 42.70 MB to 10.78 MB,
+about a 74.8% reduction in file size.
+</p>
+</div>
+
+<div class="finding">
+<strong>Compression can hurt accuracy.</strong>
+<p>
+Static INT8 reaches 33.28% accuracy in the current local experiment,
+showing why model size cannot be evaluated alone.
+</p>
+</div>
+
+<div class="finding">
+<strong>FP16 is hardware dependent.</strong>
+<p>
+Although FP16 approximately halves storage, it was dramatically slower
+on this specific Intel Mac and PyTorch environment.
+</p>
+</div>
+
+<div class="finding">
+<strong>Sparsity does not guarantee a smaller file.</strong>
+<p>
+The current unstructured pruning implementation retains dense storage,
+so zero-valued weights still occupy serialized space.
+</p>
+</div>
+
+</div>
+
+</section>
+
+
+<div class="warning">
+
+<strong>Experimental caveat:</strong>
+these values are preliminary local pipeline-validation results.
+The shortened baseline used three training epochs. Each corrected pruning run then
+received three additional fine-tuning epochs after loading that baseline. Therefore higher
+post-pruning accuracy must not be interpreted as evidence that pruning itself improved accuracy.
+Final research evaluation requires matched budgets, multiple seeds,
+repeated latency measurements and controlled hardware.
+
+</div>
+
+</main>
+
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+function niceTechnique(row) {
+  const technique = row.technique || "unknown";
+  const q = row.quantization_method;
+  const sparsity = Number(row.sparsity || 0);
+
+  if (technique === "baseline")
+    return "FP32 Baseline";
+
+  if (technique === "pruning")
+    return `${Math.round(sparsity * 100)}% Pruning`;
+
+  if (technique === "quantization") {
+    if (q === "fp32") return "FP32 Re-measurement";
+    if (q === "fp16") return "FP16";
+    if (q === "dynamic_int8") return "Dynamic INT8";
+    if (q === "static_int8") return "Static INT8";
+  }
+
+  if (technique === "combined") {
+    const method =
+      q === "dynamic_int8" ? "Dynamic INT8" :
+      q === "static_int8" ? "Static INT8" :
+      q || "";
+
+    return `${Math.round(sparsity * 100)}% + ${method}`;
+  }
+
+  return technique;
+}
+
+function tagName(row) {
+  if (row.technique === "baseline") return "BASELINE";
+  if (row.technique === "pruning") return "PRUNING";
+  if (row.technique === "quantization") return "QUANTIZATION";
+  if (row.technique === "combined") return "COMBINED";
+  return "EXPERIMENT";
+}
+
+async function loadRealResults() {
+  const status = document.getElementById("apiStatus");
+  const tbody = document.getElementById("resultsBody");
+
+  try {
+    const response = await fetch(`${API}/results`);
+
+    if (!response.ok)
+      throw new Error(`HTTP ${response.status}`);
+
+    const payload = await response.json();
+
+    tbody.innerHTML = payload.results.map(row => `
+      <tr>
+        <td>
+          <strong>${niceTechnique(row)}</strong><br>
+          <span class="tag">${tagName(row)}</span>
+        </td>
+
+        <td>
+          ${row.classification_accuracy != null
+            ? (Number(row.classification_accuracy) * 100).toFixed(2) + "%"
+            : "—"}
+        </td>
+
+        <td>
+          ${row.model_size_mb != null
+            ? Number(row.model_size_mb).toFixed(2) + " MB"
+            : "—"}
+        </td>
+
+        <td>
+          ${row.latency_mean_ms != null
+            ? Number(row.latency_mean_ms).toFixed(2) + " ms"
+            : "—"}
+        </td>
+      </tr>
+    `).join("");
+
+    status.innerHTML =
+      `● Live API connected &nbsp;·&nbsp; ${payload.count} real experiment rows`;
+
+    status.style.background = "#f0fdf4";
+    status.style.borderColor = "#bbf7d0";
+    status.style.color = "#166534";
+
+  } catch (error) {
+
+    status.innerHTML =
+      "API unavailable — showing the static fallback results.";
+
+    status.style.background = "#fff7ed";
+    status.style.borderColor = "#fed7aa";
+    status.style.color = "#9a3412";
+
+    console.error(error);
+  }
+}
+
+loadRealResults();
+</script>
+
+</body>
+</html>

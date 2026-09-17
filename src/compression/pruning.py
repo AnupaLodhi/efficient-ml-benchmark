@@ -50,7 +50,11 @@ def _prunable_conv_linear_modules(model: nn.Module):
             yield name, module
 
 
-def apply_unstructured_pruning(model: nn.Module, amount: float) -> nn.Module:
+def apply_unstructured_pruning(
+    model: nn.Module,
+    amount: float,
+    remove_reparam: bool = True,
+) -> nn.Module:
     """L1 unstructured magnitude pruning: zero out the `amount` fraction of
     individual weights (across each layer independently) with the smallest
     absolute value. Modifies `model` in place and also returns it.
@@ -65,7 +69,21 @@ def apply_unstructured_pruning(model: nn.Module, amount: float) -> nn.Module:
 
     for _, module in _prunable_conv_linear_modules(model):
         prune.l1_unstructured(module, name="weight", amount=amount)
-        prune.remove(module, "weight")  # bake mask into the tensor permanently
+        if remove_reparam:
+            prune.remove(module, "weight")
+    return model
+
+
+def finalize_pruning(model: nn.Module) -> nn.Module:
+    """Bake active pruning masks into weight tensors.
+
+    During post-pruning fine-tuning the masks must remain active so optimizer
+    updates cannot regrow pruned weights. Call this only after fine-tuning,
+    before final evaluation/export.
+    """
+    for _, module in _prunable_conv_linear_modules(model):
+        if hasattr(module, "weight_orig") and hasattr(module, "weight_mask"):
+            prune.remove(module, "weight")
     return model
 
 

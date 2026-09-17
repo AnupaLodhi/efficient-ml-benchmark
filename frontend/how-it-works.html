@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How It Works | EfficientML</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>E</text></svg>">
+</head>
+
+<body>
+
+<header>
+<nav class="navbar">
+  <div class="brand">
+    <div class="brand-icon">E</div>
+    <span>EfficientML</span>
+  </div>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a class="nav-active" href="how-it-works.html">How It Works</a>
+    <a href="lab.html">Interactive Lab</a>
+    <a href="results.html">Results</a>
+    <a href="about.html">About</a>
+    <a class="github"
+       href="https://github.com/AnupaLodhi/efficient-ml-benchmark"
+       target="_blank">◉ GitHub</a>
+  </div>
+</nav>
+</header>
+
+
+<main>
+
+<section class="how-section">
+<div class="section-container">
+
+  <div class="section-tag">MODEL COMPRESSION 101</div>
+
+  <h2>How does EfficientML work?</h2>
+
+  <p class="section-subtitle">
+    Start with ResNet-18, compress it, then measure what we gained
+    and what we lost.
+  </p>
+
+
+  <div class="concept-grid">
+
+    <article class="concept-card">
+
+      <div class="concept-top">
+        <div class="number red">01</div>
+
+        <div>
+          <h3>Pruning</h3>
+          <p>
+            Remove low-importance weights so fewer connections remain active.
+          </p>
+        </div>
+      </div>
+
+      <div class="pruning-diagram">
+
+        <div class="mini-network">
+
+          <div class="mini-row">
+            <i></i><i></i><i></i>
+          </div>
+
+          <div class="network-lines">
+            <b></b><b></b><b></b><b></b>
+          </div>
+
+          <div class="mini-row">
+            <i></i><i></i><i></i>
+          </div>
+
+          <span>Dense Network</span>
+          <small>All connections</small>
+
+        </div>
+
+        <div class="diagram-arrow">→</div>
+
+        <div class="mini-network pruned">
+
+          <div class="mini-row">
+            <i></i><i class="removed"></i><i></i>
+          </div>
+
+          <div class="network-lines">
+            <b></b>
+            <b class="removed-line"></b>
+            <b></b>
+            <b class="removed-line"></b>
+          </div>
+
+          <div class="mini-row">
+            <i></i><i></i><i class="removed"></i>
+          </div>
+
+          <span>Sparse Network</span>
+          <small>Some weights = 0</small>
+
+        </div>
+
+      </div>
+
+      <div class="card-insight">
+        Think of it like removing workers whose jobs contribute very little.
+      </div>
+
+    </article>
+
+
+    <article class="concept-card">
+
+      <div class="concept-top">
+        <div class="number green">02</div>
+
+        <div>
+          <h3>Quantization</h3>
+          <p>
+            Store numerical values using lower precision such as FP16 or INT8.
+          </p>
+        </div>
+      </div>
+
+      <div class="quant-diagram">
+
+        <div class="precision-group">
+          <strong>FP32</strong>
+
+          <div class="bits fp32-bits">
+            <i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+
+          <span>32-bit representation</span>
+        </div>
+
+        <div class="diagram-arrow">→</div>
+
+        <div class="precision-group">
+          <strong>INT8</strong>
+
+          <div class="bits int8-bits">
+            <i></i><i></i><i></i>
+          </div>
+
+          <span>8-bit representation</span>
+        </div>
+
+      </div>
+
+      <div class="card-insight">
+        Think of it like writing the same information in a smaller notebook.
+      </div>
+
+    </article>
+
+
+    <article class="concept-card">
+
+      <div class="concept-top">
+        <div class="number orange">03</div>
+
+        <div>
+          <h3>Benchmark</h3>
+          <p>
+            Compression only matters if we measure the resulting trade-offs.
+          </p>
+        </div>
+      </div>
+
+      <div class="benchmark-diagram">
+
+        <div class="benchmark-item">
+          <div class="bars"><i></i><i></i><i></i></div>
+          <strong>Accuracy</strong>
+          <span>Prediction<br>quality</span>
+        </div>
+
+        <div class="benchmark-item">
+          <div class="database-icon"><i></i><i></i><i></i></div>
+          <strong>Size</strong>
+          <span>Storage<br>required</span>
+        </div>
+
+        <div class="benchmark-item">
+          <div class="clock-icon"></div>
+          <strong>Latency</strong>
+          <span>Inference<br>time</span>
+        </div>
+
+        <div class="benchmark-item">
+          <div class="speed-icon"></div>
+          <strong>Throughput</strong>
+          <span>Inference<br>rate</span>
+        </div>
+
+      </div>
+
+      <div class="card-insight">
+        Smaller is useful only when the other consequences are understood.
+      </div>
+
+    </article>
+
+  </div>
+
+
+  <div style="
+    margin-top:28px;
+    padding:22px;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    border-radius:9px;
+    line-height:1.7;
+    color:#475569;
+    font-size:13px;
+  ">
+
+    <strong style="color:#0b1930;">Combined compression:</strong>
+
+    pruning can be applied first, followed by quantization. Our benchmark
+    then measures whether both techniques can be combined without an
+    unacceptable loss in predictive performance.
+
+  </div>
+
+
+  <div style="
+    margin-top:16px;
+    padding:22px;
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    border-radius:9px;
+    line-height:1.7;
+    color:#7c4a12;
+    font-size:13px;
+  ">
+
+    <strong>Research note:</strong>
+
+    zeroing weights through unstructured pruning does not automatically
+    shrink a densely stored model file or guarantee faster CPU execution.
+    Hardware and runtime support matter.
+
+  </div>
+
+</div>
+</section>
+
+</main>
+
+</body>
+</html>

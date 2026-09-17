@@ -78,9 +78,29 @@ class ModelRegistry:
             for ckpt in sorted(subdir.glob("*.pt")):
                 model_id = ckpt.stem
                 metrics = {}
-                if results_df is not None and "run_id" in results_df.columns:
-                    # best-effort match: run_id containing the checkpoint stem
-                    matches = results_df[results_df["run_id"].astype(str).str.contains(model_id, na=False)]
+                if results_df is not None:
+                    matches = pd.DataFrame()
+
+                    if technique_dir == "baseline":
+                        matches = results_df[
+                            (results_df["technique"] == "baseline")
+                            & (results_df["quantization_method"] == "fp32")
+                        ]
+
+                    elif technique_dir == "pruning":
+                        marker = "_s"
+                        if marker in model_id:
+                            try:
+                                sparsity = float(model_id.rsplit(marker, 1)[1])
+                                matches = results_df[
+                                    (results_df["technique"] == "pruning")
+                                    & (results_df["pruning_method"] == "unstructured_l1")
+                                    & (results_df["quantization_method"] == "fp32")
+                                    & (results_df["sparsity"].sub(sparsity).abs() < 1e-9)
+                                ]
+                            except ValueError:
+                                pass
+
                     if not matches.empty:
                         metrics = matches.iloc[-1].to_dict()
                 self.entries[model_id] = ModelEntry(model_id, ckpt, technique_dir, metrics)

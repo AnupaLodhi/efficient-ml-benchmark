@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive Efficient ML benchmark for pruning and quantization research.">
+  <title>Efficient ML Benchmark</title>
+  <link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>E</text></svg>">
+</head>
+
+<body>
+
+<header>
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">E</div>
+      <span>EfficientML</span>
+    </div>
+
+    <div class="nav-links">
+      <a class="nav-active" href="#">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="lab.html">Interactive Lab</a>
+      <a href="results.html">Results</a>
+      <a href="about.html">About</a>
+      <a class="github"
+         href="https://github.com/AnupaLodhi/efficient-ml-benchmark"
+         target="_blank" rel="noopener">◉ GitHub</a>
+    </div>
+  </nav>
+</header>
+
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+
+  <div class="hero-left">
+
+    <div class="badge">
+      <span></span>
+      REPRODUCIBLE ML SYSTEMS RESEARCH
+    </div>
+
+    <h1>
+      How small can we make
+      <em>AI</em> without breaking it?
+    </h1>
+
+    <p class="subtitle">
+      An interactive research benchmark exploring how pruning and
+      quantization affect the accuracy, size and inference performance
+      of ResNet-18 on CIFAR-10.
+    </p>
+
+    <div class="actions">
+      <a class="primary" href="lab.html">Explore Interactive Lab →</a>
+      <a class="secondary" href="how-it-works.html">How It Works</a>
+    </div>
+
+    <div class="baseline-box">
+
+      <p class="small-label">CURRENT LOCAL BASELINE</p>
+
+      <div class="metrics">
+        <div>
+          <strong>64.75%</strong>
+          <span>Test Accuracy</span>
+        </div>
+
+        <div>
+          <strong>42.70 MB</strong>
+          <span>Model Size</span>
+        </div>
+
+        <div>
+          <strong>11.17M</strong>
+          <span>Parameters</span>
+        </div>
+
+        <div>
+          <strong>18.28 ms</strong>
+          <span>CPU Latency</span>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="research-note">
+      Local pipeline-validation results from a shortened training run.<br>
+      Final controlled research experiments are tracked separately.
+    </p>
+
+  </div>
+
+
+  <!-- RESNET DIAGRAM -->
+  <div class="architecture-card">
+
+    <div class="architecture-header">
+      <h3>ResNet-18 Architecture</h3>
+      <span>Baseline (FP32)</span>
+    </div>
+
+    <div class="architecture-flow">
+
+      <!-- CAT INPUT -->
+      <div class="arch-stage input-stage">
+
+        <div class="image-stack">
+          <div class="stack-back"></div>
+          <div class="stack-middle"></div>
+
+          <div class="cat-image">
+            <div class="cat-head">
+              <div class="ear left-ear"></div>
+              <div class="ear right-ear"></div>
+
+              <div class="cat-eye eye-left"></div>
+              <div class="cat-eye eye-right"></div>
+
+              <div class="cat-nose"></div>
+
+              <div class="whisker w1"></div>
+              <div class="whisker w2"></div>
+              <div class="whisker w3"></div>
+              <div class="whisker w4"></div>
+            </div>
+          </div>
+        </div>
+
+        <strong>Input</strong>
+        <span>32 × 32 × 3</span>
+
+      </div>
+
+      <div class="arrow">→</div>
+
+
+      <!-- CONV -->
+      <div class="arch-stage">
+        <div class="tensor tensor-one"></div>
+        <strong>Conv</strong>
+        <span>3 × 3, 64</span>
+      </div>
+
+      <div class="arrow">→</div>
+
+
+      <!-- RES BLOCK 1 -->
+      <div class="arch-stage">
+        <div class="tensor-stack">
+          <i></i><i></i><i></i>
+        </div>
+        <strong>Residual<br>Block 1</strong>
+        <span>64 × 64</span>
+      </div>
+
+      <div class="arrow">→</div>
+
+
+      <!-- RES BLOCK 2 -->
+      <div class="arch-stage">
+        <div class="tensor-stack medium">
+          <i></i><i></i><i></i>
+        </div>
+        <strong>Residual<br>Block 2</strong>
+        <span>128 × 64</span>
+      </div>
+
+      <div class="arrow">→</div>
+
+
+      <!-- RES BLOCK 3 -->
+      <div class="arch-stage">
+        <div class="tensor-stack dark">
+          <i></i><i></i><i></i>
+        </div>
+        <strong>Residual<br>Block 3</strong>
+        <span>256 × 64</span>
+      </div>
+
+      <div class="arrow">→</div>
+
+
+      <!-- RES BLOCK 4 -->
+      <div class="arch-stage">
+        <div class="tensor-stack darker">
+          <i></i><i></i><i></i>
+        </div>
+        <strong>Residual<br>Block 4</strong>
+        <span>512 × 64</span>
+      </div>
+
+      <div class="arrow">→</div>
+
+
+      <!-- FC -->
+      <div class="arch-stage">
+        <div class="tensor small-tensor"></div>
+        <strong>Avg Pool<br>+ FC</strong>
+      </div>
+
+      <div class="arrow">→</div>
+
+
+      <!-- OUTPUT -->
+      <div class="classes">
+
+        <span>Airplane</span>
+        <span>Automobile</span>
+        <span>Bird</span>
+        <span class="selected-class">Cat</span>
+        <span>Deer</span>
+        <span>Dog</span>
+        <span>Frog</span>
+        <span>Horse</span>
+        <span>Ship</span>
+        <span>Truck</span>
+
+      </div>
+
+    </div>
+
+    <div class="architecture-output">
+      <strong>Output:</strong> 10 Classes
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- HOW COMPRESSION WORKS -->
+<section id="how" class="how-section">
+
+  <div class="section-container">
+
+    <div class="section-tag">THE IDEA</div>
+
+    <h2>How Model Compression Works</h2>
+
+    <p class="section-subtitle">
+      We explore two popular compression techniques and measure their
+      impact on real performance metrics.
+    </p>
+
+
+    <div class="concept-grid">
+
+      <!-- PRUNING -->
+      <article class="concept-card">
+
+        <div class="concept-top">
+          <div class="number red">01</div>
+
+          <div>
+            <h3>Pruning</h3>
+            <p>
+              Remove weights that contribute very little to the model's
+              predictions, making it sparser and more efficient.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="pruning-diagram">
+
+          <div class="mini-network">
+
+            <div class="mini-row">
+              <i></i><i></i><i></i>
+            </div>
+
+            <div class="network-lines">
+              <b></b><b></b><b></b><b></b>
+            </div>
+
+            <div class="mini-row">
+              <i></i><i></i><i></i>
+            </div>
+
+            <span>Original Model</span>
+            <small>11.17M weights</small>
+
+          </div>
+
+
+          <div class="diagram-arrow">→</div>
+
+
+          <div class="mini-network pruned">
+
+            <div class="mini-row">
+              <i></i><i class="removed"></i><i></i>
+            </div>
+
+            <div class="network-lines">
+              <b></b><b class="removed-line"></b>
+              <b></b><b class="removed-line"></b>
+            </div>
+
+            <div class="mini-row">
+              <i></i><i></i><i class="removed"></i>
+            </div>
+
+            <span>After Pruning</span>
+            <small>~40% sparsity</small>
+
+          </div>
+
+        </div>
+
+        <div class="card-insight">
+          ✓ Keeps important connections, removes redundant ones
+        </div>
+
+      </article>
+
+
+      <!-- QUANTIZATION -->
+      <article class="concept-card">
+
+        <div class="concept-top">
+          <div class="number green">02</div>
+
+          <div>
+            <h3>Quantization</h3>
+            <p>
+              Use lower-precision numbers such as INT8 instead of
+              32-bit floating point, reducing storage requirements.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="quant-diagram">
+
+          <div class="precision-group">
+            <strong>32-bit (FP32)</strong>
+
+            <div class="bits fp32-bits">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+
+            <span>4 bytes per number</span>
+          </div>
+
+
+          <div class="diagram-arrow">→</div>
+
+
+          <div class="precision-group">
+            <strong>8-bit (INT8)</strong>
+
+            <div class="bits int8-bits">
+              <i></i><i></i><i></i>
+            </div>
+
+            <span>1 byte per number</span>
+          </div>
+
+        </div>
+
+        <div class="card-insight">
+          ▣ Same information represented with smaller numbers
+        </div>
+
+      </article>
+
+
+      <!-- BENCHMARK -->
+      <article class="concept-card">
+
+        <div class="concept-top">
+          <div class="number orange">03</div>
+
+          <div>
+            <h3>Benchmark</h3>
+            <p>
+              Measure the trade-offs across accuracy, model size,
+              latency, throughput and memory.
+            </p>
+          </div>
+        </div>
+
+
+        <div class="benchmark-diagram">
+
+          <div class="benchmark-item">
+            <div class="bars">
+              <i></i><i></i><i></i>
+            </div>
+            <strong>Accuracy</strong>
+            <span>How good<br>is it?</span>
+          </div>
+
+
+          <div class="benchmark-item">
+            <div class="database-icon">
+              <i></i><i></i><i></i>
+            </div>
+            <strong>Model Size</strong>
+            <span>How big<br>is it?</span>
+          </div>
+
+
+          <div class="benchmark-item">
+            <div class="clock-icon">
+              <i></i>
+            </div>
+            <strong>Latency</strong>
+            <span>How fast<br>is it?</span>
+          </div>
+
+
+          <div class="benchmark-item">
+            <div class="speed-icon">
+              <i></i>
+            </div>
+            <strong>Throughput</strong>
+            <span>How many<br>inferences?</span>
+          </div>
+
+        </div>
+
+        <div class="card-insight">
+          ↗ A complete picture, not just a smaller file
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- INTERACTIVE LAB -->
+<section id="lab" class="lab-section">
+
+  <div class="section-tag">INTERACTIVE LAB</div>
+
+  <h2>Explore the trade-offs</h2>
+
+  <p class="section-subtitle">
+    Select a compression technique to compare it with the local FP32 baseline.
+  </p>
+
+
+  <div class="techniques">
+    <button class="tech active-tech" data-tech="baseline">Baseline</button>
+    <button class="tech" data-tech="pruning">Pruning 40%</button>
+    <button class="tech" data-tech="fp16">FP16</button>
+    <button class="tech" data-tech="dynamic">Dynamic INT8</button>
+    <button class="tech" data-tech="static">Static INT8</button>
+  </div>
+
+
+  <div class="comparison">
+
+    <div class="comparison-card">
+      <span>MODEL</span>
+      <strong id="techName">FP32 Baseline</strong>
+    </div>
+
+    <div class="comparison-card">
+      <span>ACCURACY</span>
+      <strong id="accuracy">64.75%</strong>
+    </div>
+
+    <div class="comparison-card">
+      <span>MODEL SIZE</span>
+      <strong id="size">42.70 MB</strong>
+    </div>
+
+    <div class="comparison-card">
+      <span>CPU LATENCY</span>
+      <strong id="latency">18.28 ms</strong>
+    </div>
+
+  </div>
+
+  <div id="finding" class="finding">
+    Baseline reference model used for comparison with compression techniques.
+  </div>
+
+</section>
+
+
+<!-- RESULTS -->
+<section id="results" class="results-section">
+
+  <div class="section-container">
+
+    <div class="section-tag">RESEARCH OBSERVATION</div>
+
+    <h2>Smaller doesn't automatically mean faster.</h2>
+
+    <p>
+      Efficient ML is a multi-objective problem. A technique may reduce
+      model storage while increasing latency or decreasing predictive
+      accuracy. Hardware and runtime support matter.
+    </p>
+
+  </div>
+
+</section>
+
+
+<section id="about" class="about-section">
+
+  <div>
+    <strong>Efficient ML Benchmark</strong>
+    <span>ResNet-18 · CIFAR-10 · Model Compression Research</span>
+  </div>
+
+  <p>Research & Engineering Project · Anupa Lodhi</p>
+
+</section>
+
+</main>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>

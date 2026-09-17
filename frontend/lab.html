@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interactive Lab | EfficientML</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>E</text></svg>">
+
+<style>
+.lab-page {
+  width: min(1200px, calc(100% - 80px));
+  margin: auto;
+  padding: 65px 0;
+}
+
+.lab-title {
+  margin-top: 14px;
+  color: #0b1930;
+  font-size: 46px;
+  letter-spacing: -2px;
+}
+
+.lab-description {
+  max-width: 720px;
+  margin-top: 12px;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.lab-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 32px;
+}
+
+.lab-btn {
+  padding: 11px 15px;
+  color: #475569;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.lab-btn:hover,
+.lab-btn.selected {
+  color: white;
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.workspace {
+  margin-top: 22px;
+  padding: 30px;
+  background: #f8fafc;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+}
+
+.model-comparison {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: center;
+  gap: 20px;
+}
+
+.model-card {
+  padding: 25px;
+  text-align: center;
+  background: white;
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+}
+
+.model-card h3 {
+  color: #0b1930;
+}
+
+.model-card p {
+  margin-top: 7px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.network {
+  height: 150px;
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+}
+
+.network i {
+  width: 28px;
+  display: block;
+  background: #2563eb;
+  border-radius: 4px;
+  transition: .25s;
+}
+
+.network i:nth-child(1) { height: 55px; }
+.network i:nth-child(2) { height: 78px; }
+.network i:nth-child(3) { height: 110px; }
+.network i:nth-child(4) { height: 135px; }
+.network i:nth-child(5) { height: 92px; }
+.network i:nth-child(6) { height: 65px; }
+
+.network.pruned i:nth-child(2),
+.network.pruned i:nth-child(5) {
+  opacity: .16;
+  border: 1px dashed #2563eb;
+}
+
+.network.quantized i {
+  width: 18px;
+}
+
+.network.static i {
+  width: 13px;
+}
+
+.network.combined i:nth-child(2),
+.network.combined i:nth-child(5) {
+  opacity: .16;
+}
+
+.network.combined i {
+  width: 16px;
+}
+
+.big-arrow {
+  text-align: center;
+  color: #2563eb;
+  font-size: 35px;
+  font-weight: 800;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.metric-card {
+  padding: 21px;
+  background: white;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+}
+
+.metric-card span {
+  display: block;
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.metric-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #0b1930;
+  font-size: 23px;
+}
+
+.explanation {
+  margin-top: 14px;
+  padding: 18px;
+  color: #315b92;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.caveat {
+  margin-top: 10px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+@media(max-width:800px) {
+  .lab-page {
+    width: calc(100% - 32px);
+  }
+
+  .model-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .big-arrow {
+    transform: rotate(90deg);
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<style>
+.live-inference {
+  margin-top: 90px;
+  padding-top: 60px;
+  border-top: 1px solid #dce4ef;
+}
+
+.live-inference h2 {
+  margin: 12px 0 12px;
+  font-size: clamp(30px, 4vw, 46px);
+  color: #0f1f38;
+  letter-spacing: -1.5px;
+}
+
+.inference-intro {
+  max-width: 820px;
+  color: #60708a;
+  line-height: 1.75;
+  margin-bottom: 24px;
+}
+
+.inference-status {
+  padding: 12px 16px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #315b92;
+  border-radius: 8px;
+  margin: 22px 0;
+  font-size: 13px;
+}
+
+.inference-workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.inference-input,
+.prediction-panel {
+  border: 1px solid #dce4ef;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 28px;
+  min-height: 410px;
+}
+
+.inference-input label {
+  display: block;
+  margin: 0 0 8px;
+  color: #60708a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+#modelSelect {
+  width: 100%;
+  padding: 13px 14px;
+  margin-bottom: 24px;
+  border: 1px solid #cfd9e8;
+  border-radius: 8px;
+  background: white;
+  color: #0f1f38;
+  font: inherit;
+}
+
+.upload-box {
+  border: 1px dashed #9fb2ca;
+  border-radius: 10px;
+  padding: 22px;
+  background: #f8fafc;
+}
+
+#imageInput {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+#uploadMessage {
+  color: #687890;
+  font-size: 13px;
+}
+
+.preview-wrap {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid #e0e7f0;
+  border-radius: 10px;
+  text-align: center;
+  background: #f8fafc;
+}
+
+#imagePreview {
+  display: block;
+  max-width: 220px;
+  max-height: 220px;
+  margin: auto;
+  border-radius: 8px;
+  image-rendering: auto;
+}
+
+.predict-button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #1f63e9;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.predict-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.inference-note {
+  color: #7b8799;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 13px;
+}
+
+.prediction-panel {
+  display: flex;
+  align-items: center;
+}
+
+.prediction-placeholder {
+  width: 100%;
+  text-align: center;
+  color: #7b8799;
+}
+
+.prediction-placeholder strong {
+  display: block;
+  color: #0f1f38;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+#predictionResult {
+  width: 100%;
+}
+
+.prediction-label {
+  color: #667791;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+#predictedClass {
+  margin: 8px 0 22px;
+  color: #0f1f38;
+  font-size: 42px;
+  text-transform: capitalize;
+}
+
+.confidence-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-top: 1px solid #e4eaf2;
+  border-bottom: 1px solid #e4eaf2;
+}
+
+.inference-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.inference-metrics div {
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e4eaf2;
+  border-radius: 8px;
+}
+
+.inference-metrics span {
+  display: block;
+  color: #75839a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .7px;
+  margin-bottom: 6px;
+}
+
+.inference-metrics strong {
+  color: #0f1f38;
+  font-size: 15px;
+}
+
+.model-id {
+  margin-top: 16px;
+  color: #8995a7;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 800px) {
+  .inference-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .inference-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<nav class="navbar">
+<div class="brand">
+<div class="brand-icon">E</div>
+<span>EfficientML</span>
+</div>
+
+<div class="nav-links">
+<a href="index.html">Home</a>
+<a href="how-it-works.html">How It Works</a>
+<a class="nav-active" href="lab.html">Interactive Lab</a>
+<a href="results.html">Results</a>
+<a href="about.html">About</a>
+<a class="github"
+href="https://github.com/AnupaLodhi/efficient-ml-benchmark"
+target="_blank">◉ GitHub</a>
+</div>
+</nav>
+</header>
+
+
+<main class="lab-page">
+
+<div class="section-tag">INTERACTIVE EXPERIMENT</div>
+
+<h1 class="lab-title">See compression happen.</h1>
+
+<p class="lab-description">
+Select an experiment. The visualization and measured metrics will update
+to show how that compression strategy behaved in our current local benchmark.
+</p>
+
+
+<div class="lab-controls">
+
+<button class="lab-btn selected" data-exp="baseline">
+Baseline
+</button>
+
+<button class="lab-btn" data-exp="pruning">
+40% Pruning
+</button>
+
+<button class="lab-btn" data-exp="fp16">
+FP16
+</button>
+
+<button class="lab-btn" data-exp="dynamic">
+Dynamic INT8
+</button>
+
+<button class="lab-btn" data-exp="static">
+Static INT8
+</button>
+
+<button class="lab-btn" data-exp="combinedDynamic">
+40% + Dynamic INT8
+</button>
+
+<button class="lab-btn" data-exp="combinedStatic">
+40% + Static INT8
+</button>
+
+</div>
+
+
+<div class="workspace">
+
+<div class="model-comparison">
+
+<div class="model-card">
+
+<h3>Original Model</h3>
+
+<div class="network">
+<i></i><i></i><i></i><i></i><i></i><i></i>
+</div>
+
+<strong>ResNet-18</strong>
+
+<p>FP32 baseline</p>
+
+</div>
+
+
+<div class="big-arrow">→</div>
+
+
+<div class="model-card">
+
+<h3 id="modelName">FP32 Baseline</h3>
+
+<div id="compressedNetwork" class="network">
+<i></i><i></i><i></i><i></i><i></i><i></i>
+</div>
+
+<strong id="compressionType">
+No compression
+</strong>
+
+<p id="modelDescription">
+Original reference model
+</p>
+
+</div>
+
+</div>
+
+
+<div class="metric-grid">
+
+<div class="metric-card">
+<span>TEST ACCURACY</span>
+<strong id="accuracy">64.75%</strong>
+</div>
+
+<div class="metric-card">
+<span>MODEL SIZE</span>
+<strong id="modelSize">42.70 MB</strong>
+</div>
+
+<div class="metric-card">
+<span>CPU LATENCY</span>
+<strong id="latency">18.28 ms</strong>
+</div>
+
+</div>
+
+
+<div id="explanation" class="explanation">
+The FP32 baseline is the reference used to compare compression experiments.
+</div>
+
+<p class="caveat">
+Current values are preliminary local pipeline-validation measurements.
+They are not yet the final controlled publication benchmark.
+</p>
+
+</div>
+
+
+<section class="live-inference">
+
+<div class="section-tag">LIVE MODEL INFERENCE</div>
+
+<h2>Test a real trained model.</h2>
+
+<p class="inference-intro">
+Choose one of the checkpoints that actually exists in this project,
+upload an image, and run real ResNet-18 inference through the FastAPI backend.
+For meaningful testing, use an image related to one of the CIFAR-10 classes:
+airplane, automobile, bird, cat, deer, dog, frog, horse, ship, or truck.
+</p>
+
+<div id="inferenceApiStatus" class="inference-status">
+Connecting to model API...
+</div>
+
+<div class="inference-workspace">
+
+<div class="inference-input">
+
+<label for="modelSelect">MODEL CHECKPOINT</label>
+
+<select id="modelSelect">
+<option value="">Loading available models...</option>
+</select>
+
+<label for="imageInput">TEST IMAGE</label>
+
+<div class="upload-box">
+<input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp">
+<div id="uploadMessage">
+Choose a JPG, PNG, or WebP image
+</div>
+</div>
+
+<div id="previewWrap" class="preview-wrap" hidden>
+<img id="imagePreview" alt="Uploaded image preview">
+</div>
+
+<button id="predictButton" class="predict-button" disabled>
+Run Prediction
+</button>
+
+<p class="inference-note">
+The uploaded image is resized to 32×32 before inference to match CIFAR-10 preprocessing.
+</p>
+
+</div>
+
+
+<div class="prediction-panel">
+
+<div class="prediction-placeholder" id="predictionPlaceholder">
+<strong>Prediction will appear here</strong>
+<p>Select a model and upload an image to begin.</p>
+</div>
+
+<div id="predictionResult" hidden>
+
+<span class="prediction-label">PREDICTED CLASS</span>
+<h3 id="predictedClass">—</h3>
+
+<div class="confidence-row">
+<span>Confidence</span>
+<strong id="predictionConfidence">—</strong>
+</div>
+
+<div class="inference-metrics">
+
+<div>
+<span>LIVE REQUEST LATENCY</span>
+<strong id="requestLatency">—</strong>
+</div>
+
+<div>
+<span>BENCHMARK LATENCY</span>
+<strong id="benchmarkLatency">—</strong>
+</div>
+
+<div>
+<span>MODEL SIZE</span>
+<strong id="inferenceModelSize">—</strong>
+</div>
+
+<div>
+<span>TECHNIQUE</span>
+<strong id="inferenceTechnique">—</strong>
+</div>
+
+</div>
+
+<p id="predictionModelId" class="model-id"></p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+const experiments = {
+
+baseline: {
+  name: "FP32 Baseline",
+  type: "No compression",
+  description: "Original reference model",
+  accuracy: "64.75%",
+  size: "42.70 MB",
+  latency: "18.28 ms",
+  visual: "",
+  explanation:
+    "The FP32 baseline is the reference used to compare compression experiments."
+},
+
+pruning: {
+  name: "40% Pruned Model",
+  type: "40% sparsity",
+  description: "Unstructured L1 pruning",
+  accuracy: "76.56%*",
+  size: "42.70 MB",
+  latency: "16.68 ms",
+  visual: "pruned",
+  explanation:
+    "40% of selected weights remain zero after corrected masked fine-tuning. Dense storage means the serialized file remains about 42.70 MB. The pruning stage received additional fine-tuning after the shortened baseline, so the accuracy difference cannot be attributed solely to pruning."
+},
+
+fp16: {
+  name: "FP16 Model",
+  type: "32-bit → 16-bit",
+  description: "Half precision",
+  accuracy: "64.78%",
+  size: "21.37 MB",
+  latency: "1140.92 ms",
+  visual: "quantized",
+  explanation:
+    "FP16 approximately halves model storage while preserving accuracy. On this specific Intel Mac and PyTorch environment, however, FP16 inference was dramatically slower."
+},
+
+dynamic: {
+  name: "Dynamic INT8",
+  type: "Dynamic quantization",
+  description: "Supported layers → INT8",
+  accuracy: "64.79%",
+  size: "42.69 MB",
+  latency: "12.33 ms",
+  visual: "quantized",
+  explanation:
+    "Accuracy stayed close to baseline and measured latency decreased. Only a small supported part of this ResNet-18 is dynamically quantized, so total model size barely changes."
+},
+
+static: {
+  name: "Static INT8",
+  type: "Static quantization",
+  description: "INT8 representation",
+  accuracy: "33.28%",
+  size: "10.78 MB",
+  latency: "17.09 ms",
+  visual: "static",
+  explanation:
+    "The model becomes much smaller — about 10.78 MB — but accuracy falls substantially. This clearly demonstrates that stronger compression can introduce a serious quality trade-off."
+},
+
+combinedDynamic: {
+  name: "Pruning + Dynamic INT8",
+  type: "40% sparse + Dynamic INT8",
+  description: "Combined compression",
+  accuracy: "76.55%*",
+  size: "42.69 MB",
+  latency: "18.24 ms",
+  visual: "combined",
+  explanation:
+    "This corrected combined run reuses the verified 40% sparse Phase 3 checkpoint with no additional combined-phase fine-tuning, then applies Dynamic INT8. Dynamic quantization affects only a small supported portion of this model."
+},
+
+combinedStatic: {
+  name: "Pruning + Static INT8",
+  type: "40% sparse + Static INT8",
+  description: "Combined compression",
+  accuracy: "30.36%*",
+  size: "10.78 MB",
+  latency: "22.24 ms",
+  visual: "combined",
+  explanation:
+    "The corrected 40% sparse checkpoint followed by Static INT8 reduces storage to about 10.78 MB, but accuracy falls to 30.36%. The storage reduction is attributable to quantization rather than dense unstructured pruning."
+}
+
+};
+
+
+document.querySelectorAll(".lab-btn").forEach(button => {
+
+button.addEventListener("click", () => {
+
+document
+.querySelectorAll(".lab-btn")
+.forEach(b => b.classList.remove("selected"));
+
+button.classList.add("selected");
+
+const exp = experiments[button.dataset.exp];
+
+document.getElementById("modelName").textContent = exp.name;
+document.getElementById("compressionType").textContent = exp.type;
+document.getElementById("modelDescription").textContent = exp.description;
+
+document.getElementById("accuracy").textContent = exp.accuracy;
+document.getElementById("modelSize").textContent = exp.size;
+document.getElementById("latency").textContent = exp.latency;
+
+document.getElementById("explanation").textContent = exp.explanation;
+
+const network = document.getElementById("compressedNetwork");
+
+network.className = "network";
+
+if (exp.visual) {
+network.classList.add(exp.visual);
+}
+
+});
+
+});
+
+</script>
+
+
+<script>
+const INFERENCE_API = "http://127.0.0.1:8000";
+
+const modelSelect = document.getElementById("modelSelect");
+const imageInput = document.getElementById("imageInput");
+const predictButton = document.getElementById("predictButton");
+const inferenceStatus = document.getElementById("inferenceApiStatus");
+
+function updatePredictButton() {
+  predictButton.disabled =
+    !modelSelect.value || !imageInput.files.length;
+}
+
+function readableModel(model) {
+  const id = model.model_id;
+
+  if (model.technique === "baseline")
+    return "FP32 Baseline";
+
+  if (id.includes("s0.2"))
+    return "20% Pruned";
+
+  if (id.includes("s0.4") && model.technique === "pruning")
+    return "40% Pruned";
+
+  if (id.includes("s0.6") && model.technique === "pruning")
+    return "60% Pruned";
+
+  if (id.includes("s0.8"))
+    return "80% Pruned";
+
+  if (id.includes("s0.4") && model.technique === "combined")
+    return "40% Pruned + Fine-tuned";
+
+  if (id.includes("s0.6") && model.technique === "combined")
+    return "60% Pruned + Fine-tuned";
+
+  return id;
+}
+
+async function loadModels() {
+  try {
+    const response = await fetch(`${INFERENCE_API}/models`);
+
+    if (!response.ok)
+      throw new Error(`HTTP ${response.status}`);
+
+    const models = await response.json();
+
+    modelSelect.innerHTML =
+      '<option value="">Choose a trained checkpoint</option>';
+
+    models.forEach(model => {
+      const option = document.createElement("option");
+      option.value = model.model_id;
+      option.textContent =
+        `${readableModel(model)} · ${model.technique}`;
+      modelSelect.appendChild(option);
+    });
+
+    inferenceStatus.textContent =
+      `● Model API connected · ${models.length} real checkpoints available`;
+
+    inferenceStatus.style.background = "#f0fdf4";
+    inferenceStatus.style.borderColor = "#bbf7d0";
+    inferenceStatus.style.color = "#166534";
+
+  } catch (error) {
+    inferenceStatus.textContent =
+      "Model API unavailable. Start the FastAPI backend to use live inference.";
+
+    inferenceStatus.style.background = "#fff7ed";
+    inferenceStatus.style.borderColor = "#fed7aa";
+    inferenceStatus.style.color = "#9a3412";
+
+    modelSelect.innerHTML =
+      '<option value="">API unavailable</option>';
+
+    console.error(error);
+  }
+}
+
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files[0];
+
+  if (!file) {
+    document.getElementById("previewWrap").hidden = true;
+    updatePredictButton();
+    return;
+  }
+
+  document.getElementById("imagePreview").src =
+    URL.createObjectURL(file);
+
+  document.getElementById("previewWrap").hidden = false;
+  document.getElementById("uploadMessage").textContent = file.name;
+
+  updatePredictButton();
+});
+
+modelSelect.addEventListener("change", updatePredictButton);
+
+predictButton.addEventListener("click", async () => {
+  const file = imageInput.files[0];
+  const modelId = modelSelect.value;
+
+  if (!file || !modelId)
+    return;
+
+  predictButton.disabled = true;
+  predictButton.textContent = "Running inference...";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(
+      `${INFERENCE_API}/predict?model_id=${encodeURIComponent(modelId)}`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const payload = await response.json();
+
+    if (!response.ok)
+      throw new Error(payload.detail || `HTTP ${response.status}`);
+
+    document.getElementById("predictionPlaceholder").hidden = true;
+    document.getElementById("predictionResult").hidden = false;
+
+    document.getElementById("predictedClass").textContent =
+      payload.predicted_class;
+
+    document.getElementById("predictionConfidence").textContent =
+      (Number(payload.confidence) * 100).toFixed(2) + "%";
+
+    document.getElementById("requestLatency").textContent =
+      Number(payload.request_latency_ms).toFixed(2) + " ms";
+
+    document.getElementById("benchmarkLatency").textContent =
+      payload.benchmarked_latency_ms != null
+        ? Number(payload.benchmarked_latency_ms).toFixed(2) + " ms"
+        : "Not benchmarked for this checkpoint";
+
+    document.getElementById("inferenceModelSize").textContent =
+      payload.model_size_mb != null
+        ? Number(payload.model_size_mb).toFixed(2) + " MB"
+        : "Not benchmarked for this checkpoint";
+
+    document.getElementById("inferenceTechnique").textContent =
+      payload.technique || "—";
+
+    document.getElementById("predictionModelId").textContent =
+      `Checkpoint: ${payload.model_id}`;
+
+  } catch (error) {
+    alert(`Prediction failed: ${error.message}`);
+    console.error(error);
+
+  } finally {
+    predictButton.textContent = "Run Prediction";
+    updatePredictButton();
+  }
+});
+
+loadModels();
+</script>
+
+</body>
+</html>

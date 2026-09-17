@@ -80,13 +80,23 @@ def _set_dotted(cfg: dict, dotted_key: str, value: Any) -> None:
 
 
 def save_config(cfg: dict, path: str | Path) -> None:
-    """Persist the *effective* config (after overrides) alongside results.
+    """Persist the effective config after overrides alongside results.
 
     Every experiment run should dump its resolved config next to its outputs
-    so that any figure or number can be traced back to the exact settings
-    that produced it.
+    so that figures and measurements can be traced back to the settings that
+    produced them.
     """
+
+    def to_plain_dict(obj):
+        if isinstance(obj, dict):
+            return {key: to_plain_dict(value) for key, value in obj.items()}
+        if isinstance(obj, list):
+            return [to_plain_dict(value) for value in obj]
+        if isinstance(obj, tuple):
+            return [to_plain_dict(value) for value in obj]
+        return obj
+
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w") as f:
-        yaml.safe_dump(dict(cfg), f, sort_keys=False)
+        yaml.safe_dump(to_plain_dict(cfg), f, sort_keys=False)

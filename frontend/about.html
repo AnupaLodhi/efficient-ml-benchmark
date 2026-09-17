@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About | EfficientML</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>E</text></svg>">
+
+<style>
+.about-page {
+  width: min(1200px, calc(100% - 80px));
+  margin: auto;
+  padding: 65px 0;
+}
+
+.about-page h1 {
+  margin-top: 14px;
+  color: #0b1930;
+  font-size: 46px;
+  letter-spacing: -2px;
+}
+
+.intro {
+  max-width: 760px;
+  margin-top: 12px;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.question {
+  margin-top: 35px;
+  padding: 35px;
+  color: white;
+  background: #0b1930;
+  border-radius: 12px;
+}
+
+.question span {
+  font-size: 9px;
+  letter-spacing: 1px;
+  opacity: .65;
+}
+
+.question h2 {
+  max-width: 850px;
+  margin-top: 10px;
+  font-size: 29px;
+  line-height: 1.35;
+}
+
+.about-section {
+  margin-top: 55px;
+}
+
+.about-section h2 {
+  color: #0b1930;
+  font-size: 28px;
+}
+
+.about-section > p {
+  max-width: 780px;
+  margin-top: 9px;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.method-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 14px;
+}
+
+.method {
+  padding: 22px;
+  border: 1px solid #dbe3ee;
+  border-radius: 9px;
+  background: white;
+}
+
+.method span {
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.method h3 {
+  margin-top: 8px;
+  color: #0b1930;
+}
+
+.method p {
+  margin-top: 7px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.stack {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stack span {
+  padding: 8px 12px;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #dbe3ee;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.limitations {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 12px;
+}
+
+.limit {
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+}
+
+.limit strong {
+  color: #0b1930;
+}
+
+.limit p {
+  margin-top: 7px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.final-note {
+  margin-top: 25px;
+  padding: 19px;
+  color: #315b92;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+@media(max-width:800px) {
+  .about-page {
+    width: calc(100% - 32px);
+  }
+
+  .method-grid,
+  .limitations {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<nav class="navbar">
+
+<div class="brand">
+<div class="brand-icon">E</div>
+<span>EfficientML</span>
+</div>
+
+<div class="nav-links">
+<a href="index.html">Home</a>
+<a href="how-it-works.html">How It Works</a>
+<a href="lab.html">Interactive Lab</a>
+<a href="results.html">Results</a>
+<a class="nav-active" href="about.html">About</a>
+<a class="github"
+href="https://github.com/AnupaLodhi/efficient-ml-benchmark"
+target="_blank">◉ GitHub</a>
+</div>
+
+</nav>
+</header>
+
+
+<main class="about-page">
+
+<div class="section-tag">ABOUT THE RESEARCH</div>
+
+<h1>EfficientML Benchmark</h1>
+
+<p class="intro">
+A reproducible machine-learning benchmarking framework for studying
+accuracy–efficiency trade-offs across neural-network compression methods
+using ResNet-18 and CIFAR-10.
+</p>
+
+
+<div class="question">
+
+<span>CORE RESEARCH QUESTION</span>
+
+<h2>
+How small and efficient can a neural network become while retaining
+useful predictive performance?
+</h2>
+
+</div>
+
+
+<section class="about-section">
+
+<h2>Experimental workflow</h2>
+
+<p>
+The framework follows the same broad pipeline for each compression
+experiment so model quality and efficiency can be studied together.
+</p>
+
+<div class="method-grid">
+
+<div class="method">
+<span>01</span>
+<h3>Train</h3>
+<p>
+Train a ResNet-18 baseline on CIFAR-10 and save its evaluation metrics.
+</p>
+</div>
+
+<div class="method">
+<span>02</span>
+<h3>Prune</h3>
+<p>
+Zero low-importance weights at multiple sparsity levels and fine-tune the network.
+</p>
+</div>
+
+<div class="method">
+<span>03</span>
+<h3>Quantize</h3>
+<p>
+Evaluate FP16, dynamic INT8 and static INT8 representations.
+</p>
+</div>
+
+<div class="method">
+<span>04</span>
+<h3>Combine</h3>
+<p>
+Apply pruning followed by quantization to study interacting compression effects.
+</p>
+</div>
+
+<div class="method">
+<span>05</span>
+<h3>Benchmark</h3>
+<p>
+Measure predictive performance, storage, latency, throughput and other efficiency metrics.
+</p>
+</div>
+
+<div class="method">
+<span>06</span>
+<h3>Analyze</h3>
+<p>
+Compare trade-offs and document hardware-specific behavior and experimental limitations.
+</p>
+</div>
+
+</div>
+
+</section>
+
+
+<section class="about-section">
+
+<h2>Technology</h2>
+
+<div class="stack">
+<span>Python 3.12</span>
+<span>PyTorch 2.2.2</span>
+<span>torchvision</span>
+<span>ResNet-18</span>
+<span>CIFAR-10</span>
+<span>NumPy</span>
+<span>scikit-learn</span>
+<span>Matplotlib</span>
+<span>FastAPI</span>
+<span>PyTest</span>
+<span>Docker</span>
+<span>HTML / CSS / JavaScript</span>
+</div>
+
+</section>
+
+
+<section class="about-section">
+
+<h2>Current research limitations</h2>
+
+<div class="limitations">
+
+<div class="limit">
+<strong>Short baseline training</strong>
+<p>
+The current local baseline was trained for three epochs to validate the
+end-to-end experimental pipeline rather than establish a converged final benchmark.
+</p>
+</div>
+
+<div class="limit">
+<strong>Different fine-tuning budgets</strong>
+<p>
+Some pruning runs used different fine-tuning budgets. Their accuracy
+values therefore cannot establish that pruning itself caused an improvement.
+</p>
+</div>
+
+<div class="limit">
+<strong>Hardware-specific latency</strong>
+<p>
+Current latency observations were measured on the local Intel Mac environment
+and should not be generalized to GPUs, mobile accelerators or other CPUs.
+</p>
+</div>
+
+<div class="limit">
+<strong>Dense sparse-model storage</strong>
+<p>
+Unstructured pruning zeroes weights, but the current dense representation
+does not automatically reduce serialized model size.
+</p>
+</div>
+
+</div>
+
+<div class="final-note">
+<strong>Next research stage:</strong>
+run a converged baseline, matched compression training budgets,
+multiple random seeds and repeated hardware-controlled latency measurements
+before drawing publication-level conclusions.
+</div>
+
+</section>
+
+</main>
+
+</body>
+</html>

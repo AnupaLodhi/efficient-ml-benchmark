@@ -22,12 +22,14 @@ wasn't measured.
 """
 from __future__ import annotations
 
+import csv
 import io
 import time
 from pathlib import Path
 
 import torch
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from PIL import Image
 from pydantic import BaseModel
@@ -44,6 +46,18 @@ app = FastAPI(
     title="Efficient ML Benchmark -- Inference API",
     description="Serves CIFAR-10 ResNet-18 baseline and compressed variants for comparison.",
     version="0.1.0",
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 _cfg = load_config()
@@ -81,6 +95,51 @@ def list_models() -> list[dict]:
     if _registry.is_empty():
         return []
     return _registry.list_models()
+
+
+
+@app.get("/results")
+def get_results() -> dict:
+    """Return the real experiment rows currently stored by the benchmark pipeline."""
+    results_path = Path(_cfg.paths.results_raw) / "results.csv"
+
+    if not results_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Results file not found: {results_path}",
+        )
+
+    rows = []
+
+    with results_path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+
+        for row in reader:
+            cleaned = {}
+
+            for key, value in row.items():
+                if value is None:
+                    cleaned[key] = None
+                    continue
+
+                value = value.strip()
+
+                if value == "":
+                    cleaned[key] = None
+                    continue
+
+                try:
+                    cleaned[key] = float(value)
+                except ValueError:
+                    cleaned[key] = value
+
+            rows.append(cleaned)
+
+    return {
+        "source": str(results_path),
+        "count": len(rows),
+        "results": rows,
+    }
 
 
 @app.post("/predict", response_model=PredictionResponse)

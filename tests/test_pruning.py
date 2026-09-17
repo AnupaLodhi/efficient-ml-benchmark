@@ -69,3 +69,34 @@ def test_high_sparsity_across_full_config_sweep():
         apply_unstructured_pruning(model, sparsity)
         report = get_sparsity_report(model)
         assert abs(report["overall_sparsity"] - sparsity) < 0.01, f"failed at sparsity={sparsity}"
+
+
+def test_unstructured_pruning_mask_prevents_weight_regrowth():
+    """Pruned weights must remain zero during post-pruning fine-tuning."""
+    from src.compression.pruning import finalize_pruning
+
+    model = build_resnet18_cifar()
+    apply_unstructured_pruning(model, 0.4, remove_reparam=False)
+
+    before = get_sparsity_report(model)["overall_sparsity"]
+
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+    criterion = torch.nn.CrossEntropyLoss()
+
+    model.train()
+    x = torch.randn(4, 3, 32, 32)
+    targets = torch.randint(0, 10, (4,))
+
+    optimizer.zero_grad()
+    loss = criterion(model(x), targets)
+    loss.backward()
+    optimizer.step()
+
+    during = get_sparsity_report(model)["overall_sparsity"]
+
+    finalize_pruning(model)
+    after = get_sparsity_report(model)["overall_sparsity"]
+
+    assert abs(before - 0.4) < 0.01
+    assert abs(during - before) < 1e-6
+    assert abs(after - before) < 1e-6
