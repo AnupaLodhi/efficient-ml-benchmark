@@ -106,25 +106,33 @@ def run_combined_sweep(cfg, checkpoint_path: str | Path) -> None:
                 "Run the Phase 3 pruning sweep first."
             )
 
+        state_dict = torch.load(pruning_ckpt, map_location="cpu")
+        is_masked_checkpoint = any(
+            key.endswith("weight_mask") for key in state_dict
+        )
+
         pruned_model = load_baseline_model(checkpoint_path, cfg)
-        apply_unstructured_pruning(
-            pruned_model,
-            sparsity,
-            remove_reparam=False,
-        )
-        pruned_model.load_state_dict(
-            torch.load(pruning_ckpt, map_location="cpu")
-        )
 
-        masked_report = get_sparsity_report(pruned_model)
-        if abs(masked_report["overall_sparsity"] - sparsity) >= 0.01:
-            raise RuntimeError(
-                f"Loaded pruning checkpoint has unexpected sparsity: "
-                f"target={sparsity:.4f}, "
-                f"actual={masked_report['overall_sparsity']:.4f}"
+        if is_masked_checkpoint:
+            apply_unstructured_pruning(
+                pruned_model,
+                sparsity,
+                remove_reparam=False,
             )
+            pruned_model.load_state_dict(state_dict)
 
-        finalize_pruning(pruned_model)
+            masked_report = get_sparsity_report(pruned_model)
+            if abs(masked_report["overall_sparsity"] - sparsity) >= 0.01:
+                raise RuntimeError(
+                    f"Loaded masked pruning checkpoint has unexpected sparsity: "
+                    f"target={sparsity:.4f}, "
+                    f"actual={masked_report['overall_sparsity']:.4f}"
+                )
+
+            finalize_pruning(pruned_model)
+        else:
+            pruned_model.load_state_dict(state_dict)
+
         sparsity_report = get_sparsity_report(pruned_model)
 
         if abs(sparsity_report["overall_sparsity"] - sparsity) >= 0.01:
