@@ -1,0 +1,3 @@
+model,repeats,rss_before_load_mib_mean,rss_after_load_mib_mean,rss_peak_sampled_mib_mean,load_rss_delta_mib_mean,inference_peak_over_initial_mib_mean
+unpruned_control,5,211.6921875,296.5390625,296.60234375,84.846875,84.91015625
+structured_pruned,5,211.68203125,264.659375,265.30625,52.97734375,53.62421875
