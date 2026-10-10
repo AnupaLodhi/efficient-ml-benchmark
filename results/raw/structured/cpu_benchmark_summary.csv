@@ -1,0 +1,3 @@
+model,rounds,latency_mean_ms,latency_std_between_rounds_ms,throughput_mean_images_sec
+baseline,5,10.25569788145367,1.0040200091706413,98.20285716024298
+structured_pruned,5,9.416539157857187,1.7338585198171472,108.93490639130096

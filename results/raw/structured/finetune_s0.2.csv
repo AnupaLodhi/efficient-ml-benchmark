@@ -1,0 +1,2 @@
+dataset,model,seed,pruning_method,requested_pruning_ratio,original_params,pruned_params,parameter_reduction_pct,validation_accuracy_before_finetune,validation_accuracy_after_finetune,best_validation_accuracy,best_epoch,fine_tune_epochs,learning_rate,training_time_sec,checkpoint
+CIFAR-10,ResNet-18,42,physical_structured_magnitude_l2,0.2,11173962,7122360,36.25931428798487,0.2886,0.8074,0.8074,3,3,0.01,3509.3076363210275,models/pruning/resnet18_structured_physical_s0.2_best.pt

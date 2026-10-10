@@ -1,0 +1,11 @@
+2026-10-10 21:29:14 | INFO     | src.training.train | epoch 1/3 | train_loss=0.6977 val_loss=0.6337 val_acc=0.7750 (best=0.7750 @ epoch 1) | 1801.0s/epoch
+2026-10-10 21:59:23 | INFO     | src.training.train | epoch 2/3 | train_loss=0.6120 val_loss=0.5883 val_acc=0.7950 (best=0.7950 @ epoch 2) | 1808.6s/epoch
+2026-10-10 22:24:36 | INFO     | src.training.train | epoch 3/3 | train_loss=0.5556 val_loss=0.5522 val_acc=0.8056 (best=0.8056 @ epoch 3) | 1513.4s/epoch
+
+===== UNPRUNED CONTROL RESULTS =====
+Validation accuracy before: 64.84%
+Validation accuracy after: 80.56%
+Best epoch: 3
+Training time: 5123.7s
+Saved checkpoint: models/baseline/resnet18_unpruned_control_3extra_epochs.pt
+Saved results: results/raw/structured

@@ -1,0 +1,18 @@
+{
+  "dataset": "CIFAR-10",
+  "model": "ResNet-18",
+  "seed": 42,
+  "pruning_method": "physical_structured_magnitude_l2",
+  "requested_pruning_ratio": 0.2,
+  "original_params": 11173962,
+  "pruned_params": 7122360,
+  "parameter_reduction_pct": 36.25931428798487,
+  "validation_accuracy_before_finetune": 0.2886,
+  "validation_accuracy_after_finetune": 0.8074,
+  "best_validation_accuracy": 0.8074,
+  "best_epoch": 3,
+  "fine_tune_epochs": 3,
+  "learning_rate": 0.01,
+  "training_time_sec": 3509.3076363210275,
+  "checkpoint": "models/pruning/resnet18_structured_physical_s0.2_best.pt"
+}

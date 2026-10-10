@@ -1,0 +1,2 @@
+dataset,model,condition,seed,original_params,validation_accuracy_before,validation_accuracy_after,best_validation_accuracy,best_epoch,extra_training_epochs,learning_rate,training_time_sec,checkpoint
+CIFAR-10,ResNet-18,unpruned_control,42,11173962,0.6484,0.8056,0.8056,3,3,0.01,5123.653342274018,models/baseline/resnet18_unpruned_control_3extra_epochs.pt

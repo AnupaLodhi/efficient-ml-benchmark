@@ -1,0 +1,15 @@
+{
+  "dataset": "CIFAR-10",
+  "model": "ResNet-18",
+  "condition": "unpruned_control",
+  "seed": 42,
+  "original_params": 11173962,
+  "validation_accuracy_before": 0.6484,
+  "validation_accuracy_after": 0.8056,
+  "best_validation_accuracy": 0.8056,
+  "best_epoch": 3,
+  "extra_training_epochs": 3,
+  "learning_rate": 0.01,
+  "training_time_sec": 5123.653342274018,
+  "checkpoint": "models/baseline/resnet18_unpruned_control_3extra_epochs.pt"
+}
