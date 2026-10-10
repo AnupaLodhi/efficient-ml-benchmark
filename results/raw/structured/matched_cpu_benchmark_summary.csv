@@ -1,0 +1,3 @@
+model,rounds,latency_mean_ms,latency_std_between_rounds_ms,throughput_mean_images_per_sec,checkpoint
+unpruned_control,5,9.711274709668942,0.13476620613346763,102.98919265338016,models/baseline/resnet18_unpruned_control_3extra_epochs.pt
+structured_pruned,5,8.581566330045462,0.566413456246266,116.92628611470418,models/pruning/resnet18_structured_physical_s0.2_best.pt
