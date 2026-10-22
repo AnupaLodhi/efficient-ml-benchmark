@@ -1,0 +1,40 @@
+{
+  "dataset": "CIFAR-10",
+  "model": "ResNet-18",
+  "seed": 42,
+  "pruning_method": "physical_structured_magnitude_l2",
+  "requested_pruning_ratio": 0.2,
+  "baseline_validation_accuracy": 0.9398,
+  "original_parameters": 11173962,
+  "pruned_parameters": 7122360,
+  "parameter_reduction_pct": 36.25931428798487,
+  "validation_accuracy_before_finetune": 0.3964,
+  "validation_accuracy_after_finetune": 0.9324,
+  "best_validation_accuracy": 0.9324,
+  "best_epoch": 3,
+  "fine_tune_epochs": 3,
+  "learning_rate": 0.01,
+  "training_time_sec": 2644.708944651007,
+  "checkpoint": "models/research_pruning/ratio_20/best_model.pt",
+  "full_model": "models/research_pruning/ratio_20/full_model.pt",
+  "train_loss": [
+    0.09174132566650708,
+    0.06624397205842866,
+    0.039251893835597566
+  ],
+  "val_loss": [
+    0.28543644075393676,
+    0.24554074493646622,
+    0.22177131552696228
+  ],
+  "val_accuracy": [
+    0.9162,
+    0.927,
+    0.9324
+  ],
+  "epoch_time_sec": [
+    892.5943447810132,
+    876.1889394639875,
+    875.6922662930156
+  ]
+}

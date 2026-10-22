@@ -1,0 +1,2 @@
+dataset,model,seed,pruning_method,requested_pruning_ratio,baseline_validation_accuracy,original_parameters,pruned_parameters,parameter_reduction_pct,validation_accuracy_before_finetune,validation_accuracy_after_finetune,best_validation_accuracy,best_epoch,fine_tune_epochs,learning_rate,training_time_sec,checkpoint,full_model
+CIFAR-10,ResNet-18,42,physical_structured_magnitude_l2,0.3,0.9398,11173962,5459866,51.13760007417244,0.2594,0.929,0.929,3,3,0.01,2167.4337615509867,models/research_pruning/ratio_30/best_model.pt,models/research_pruning/ratio_30/full_model.pt
